@@ -1,0 +1,58 @@
+[TOOLS] :: 
+    [
+        "KUBERNETES",
+        "TERRAFORM",
+        "DOCKER",
+        "JENKINS"
+        "GIT/GITHUB"
+    ]
+
+[INFRASTRUCTURE] :: OCI <<< TERRAFORM
+    "INSTANCE" <-- [
+        "DESKSPACE" --> {
+            "DESCRIPTION": "Cloud Workspace And GitOps Trusted Agent"
+        },
+        "MASTER NODE" --> {
+            "DESCRIPTION": "Kubernetes Cluster Master Node"
+        },
+        "WORKER NODE" --> {
+            "DESCRIPTION" <-- "Kubernetes Cluster Worker Node"
+            "COUNT" <-- 2
+        },
+    ]
+
+[MICRO-SERVICES] :: DOCKER
+    "APP" <-- [
+        "FRONTEND APP",
+        "API APP",
+        "DATABASE APP",
+    ]
+
+    "CI/CD" <-- [
+        "JENKINS",
+        "SOCAT",
+        "CI/CD BOT" || "ZLORG",
+    ]
+
+[CLUSTER] :: KUBERNETES
+    "NAMESPACE" <-- [
+        "PROD" <-- &[MICRO-SERVICES]["APP"],
+        "TEST" <-- &[MICRO-SERVICES]["APP"],
+        "CICD" <-- &[MICRO-SERVICES]["CD/CD"],
+    ]
+
+[PIPELINE] :: JENKINS
+    "DEV" <-- ["DEV CI", "DEV CD"]
+    "GITOPS" <-- ["INFRA UPDATE"]
+    "CICD" <-- ["SELF PIPELINE UPDATE", "BOT CI", "BOT CD"]
+
+[VERSION-CONTROL] :: GITHUB
+
+[DEV-TECH]
+    <-- [
+        "PYTHON",
+        "GO" |> "SPRINT",
+        ("JAVASCRIPT" || "NODE.JS") |> ANGULAR",
+        "BASH",
+        "POSTGRES"
+    ]
