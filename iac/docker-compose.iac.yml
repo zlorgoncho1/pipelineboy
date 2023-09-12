@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  kubectl:
+    image: bitnami/kubectl
+    working_dir: /kubernetes/
+    volumes:
+      - ./config/kubernetes.config.yaml:/.kube/config
+      - ./kubernetes/:/kubernetes/
+
+  terraform:
+    image: hashicorp/terraform
+    working_dir: /terraform/
+    volumes:
+      - ./terraform/:/terraform/
