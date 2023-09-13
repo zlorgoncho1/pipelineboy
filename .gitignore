@@ -1,1 +1,6 @@
 iac/config/
+*.exe
+iac/terraform/.ssh/
+config.auto.tfvars
+.terraform*
+*tfstate*
