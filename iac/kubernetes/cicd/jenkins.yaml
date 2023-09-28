@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: cicd
+  name: jenkins_server
+  labels:
+    app: jenkins_server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins_server
+  template:
+    metadata:
+      labels:
+        app: jenkins_server
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins
+          volumeMounts:
+            - name: jenkins_home
+              mountPath: /var/jenkins_home
+          ports:
+            - containerPort: 8080
+            - containerPort: 50000
+        - name: socat
+          image: alpine/socat
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "tcp-listen:2375,fork,reuseaddr tcp-connect:target:2375"
+          ports:
+            - containerPort: 2375
+    volumes:
+      - name: jenkins_home
+        emptyDir:
+          sizeLimit: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    provider: jenkins_server_svc
+  name: jenkins_server_svc
+  namespace: cicd
+spec:
+  type: ClusterIP
+  selector:
+    matchLabels:
+      app: jenkins_server
+  ports:
+    - name: "JENKINS SERVER PORT"
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: "JENKINS AGENT PORT"
+      protocol: TCP
+      port: 50000
+      targetPort: 50000
+    - name: "SOCAT PORT"
+      protocol: TCP
+      port: 2375
+      targetPort: 2375
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: cicd
+  name: cicd-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /cicd/jenkins
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins_server_svc
+                port:
+                  number: 8080

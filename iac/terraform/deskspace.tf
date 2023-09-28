@@ -40,6 +40,7 @@ resource "oci_core_instance" "pipelineboy-deskspace" {
   provisioner "remote-exec" {
     inline = [
       "mkdir -p /home/ubuntu/pipelineboy/iac/config",
+      "mkdir -p /home/ubuntu/pipelineboy/iac/nginx",
       "mkdir -p /home/ubuntu/pipelineboy/iac/kubernetes",
       "mkdir -p /home/ubuntu/pipelineboy/iac/scripts/deskspace",
       "mkdir -p /home/ubuntu/pipelineboy/iac/terraform/.ssh",
@@ -49,6 +50,11 @@ resource "oci_core_instance" "pipelineboy-deskspace" {
   provisioner "file" {
     source      = "./../config/"
     destination = "/home/ubuntu/pipelineboy/iac/config"
+  }
+
+  provisioner "file" {
+    source      = "./../nginx/"
+    destination = "/home/ubuntu/pipelineboy/iac/nginx"
   }
 
   provisioner "file" {

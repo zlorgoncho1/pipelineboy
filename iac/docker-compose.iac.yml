@@ -13,3 +13,9 @@ services:
     working_dir: /terraform/
     volumes:
       - ./terraform/:/terraform/
+  
+  load_balancer:
+    build: nginx
+    container_name: nginx
+    ports:
+      - 80:80

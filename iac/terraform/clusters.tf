@@ -96,6 +96,7 @@ resource "oci_core_instance" "pipelineboy-worker-node" {
     nsg_ids = [
       oci_core_network_security_group.pipelineboy-nsg.id,
     ]
+    private_ip   = "1.1.1.${20 + count.index + 1}"
     subnet_id    = oci_core_subnet.pipelineboy-subnet-root.id
     display_name = "pipelineboy-worker-node-${count.index + 1}-vnic"
   }
