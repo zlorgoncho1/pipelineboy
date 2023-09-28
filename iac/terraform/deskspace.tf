@@ -5,8 +5,8 @@ resource "oci_core_instance" "pipelineboy-deskspace" {
   shape               = var.vm_shape_standard
 
   shape_config {
-    memory_in_gbs = 6
-    ocpus         = 1
+    memory_in_gbs = 8
+    ocpus         = 4
   }
   metadata = {
     ssh_authorized_keys = file("./.ssh/pipelineboy.pub")
@@ -34,14 +34,14 @@ resource "oci_core_instance" "pipelineboy-deskspace" {
   }
 
   provisioner "local-exec" {
-    command = "python ../scripts/copy_infra.py"
+    command = "python ../scripts/deskspace/copy_infra.py"
   }
 
   provisioner "remote-exec" {
     inline = [
       "mkdir -p /home/ubuntu/pipelineboy/iac/config",
       "mkdir -p /home/ubuntu/pipelineboy/iac/kubernetes",
-      "mkdir -p /home/ubuntu/pipelineboy/iac/scripts",
+      "mkdir -p /home/ubuntu/pipelineboy/iac/scripts/deskspace",
       "mkdir -p /home/ubuntu/pipelineboy/iac/terraform/.ssh",
     ]
   }
@@ -57,8 +57,8 @@ resource "oci_core_instance" "pipelineboy-deskspace" {
   }
 
   provisioner "file" {
-    source      = "./../scripts/"
-    destination = "/home/ubuntu/pipelineboy/iac/scripts"
+    source      = "./../scripts/deskspace/"
+    destination = "/home/ubuntu/pipelineboy/iac/scripts/deskspace"
   }
 
   provisioner "file" {
@@ -76,17 +76,17 @@ resource "oci_core_instance" "pipelineboy-deskspace" {
     destination = "/home/ubuntu/pipelineboy/iac/docker-compose.iac.yml"
   }
 
-    provisioner "local-exec" {
-    command = "python ../scripts/delete_infra_folder.py"
+  provisioner "local-exec" {
+    command = "python ../scripts/deskspace/delete_infra_folder.py"
   }
 
   provisioner "remote-exec" {
     inline = [
       "sudo apt update",
       "sudo apt install dos2unix -y",
-      "dos2unix /home/ubuntu/pipelineboy/iac/scripts/config.sh",
-      "sudo chmod +x /home/ubuntu/pipelineboy/iac/scripts/config.sh",
-      "sudo bash /home/ubuntu/pipelineboy/iac/scripts/config.sh",
+      "dos2unix /home/ubuntu/pipelineboy/iac/scripts/deskspace/config.sh",
+      "sudo chmod +x /home/ubuntu/pipelineboy/iac/scripts/deskspace/config.sh",
+      "sudo bash /home/ubuntu/pipelineboy/iac/scripts/deskspace/config.sh",
     ]
   }
 }

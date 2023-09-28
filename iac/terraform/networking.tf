@@ -41,32 +41,10 @@ resource "oci_core_network_security_group" "pipelineboy-nsg" {
   vcn_id         = oci_core_vcn.pipeline-vcn.id
 }
 
-resource "oci_core_network_security_group_security_rule" "test_network_security_group_security_rule_ingress_ssh" {
+resource "oci_core_network_security_group_security_rule" "pipelineboy-nsg-rule-internal-ingress" {
   network_security_group_id = oci_core_network_security_group.pipelineboy-nsg.id
   direction                 = "INGRESS"
-  protocol                  = 6
-
-  source      = "0.0.0.0/0"
-  source_type = "CIDR_BLOCK"
-  tcp_options {
-    destination_port_range {
-      max = 22
-      min = 22
-    }
-  }
-}
-
-resource "oci_core_network_security_group_security_rule" "test_network_security_group_security_rule_egress_rule" {
-  network_security_group_id = oci_core_network_security_group.pipelineboy-nsg.id
-  direction                 = "EGRESS"
-  protocol                  = 6
-
-  destination      = "0.0.0.0/0"
-  destination_type = "CIDR_BLOCK"
-
-  source      = "1.1.1.0/24"
-  source_type = "CIDR_BLOCK"
-  lifecycle {
-    ignore_changes = all
-  }
+  protocol                  = "all"
+  source                    = "1.1.1.0/24"
+  source_type               = "CIDR_BLOCK"
 }
