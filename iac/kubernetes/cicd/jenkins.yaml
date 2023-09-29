@@ -16,26 +16,26 @@ spec:
         app: jenkins-server
     spec:
       containers:
-        - name: jenkins
-          image: jenkins/jenkins
-          volumeMounts:
-            - name: jenkins-home
-              mountPath: /var/jenkins_home
-          ports:
-            - containerPort: 8080
-            - containerPort: 50000
-        - name: socat
-          image: alpine/socat
-          command:
-            - "/bin/sh"
-            - "-c"
-            - "tcp-listen:2375,fork,reuseaddr tcp-connect:target:2375"
-          ports:
-            - containerPort: 2375
-      volumes:
+      - name: jenkins
+        image: jenkins/jenkins
+        volumeMounts:
         - name: jenkins-home
-          emptyDir:
-            sizeLimit: 5Gi
+          mountPath: /var/jenkins_home
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+      - name: socat
+        image: alpine/socat
+        command:
+        - "/bin/sh"
+        - "-c"
+        - "socat tcp-listen:2375,fork,reuseaddr tcp-connect:target:2375"
+        ports:
+        - containerPort: 2375
+      volumes:
+      - name: jenkins-home
+        emptyDir:
+          sizeLimit: 5Gi
 ---
 apiVersion: v1
 kind: Service
@@ -47,18 +47,20 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    matchLabels:
-      app: jenkins-server
+    app: 'jenkins-server'
   ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
-    -  protocol: TCP
-      port: 50000
-      targetPort: 50000
-    -  protocol: TCP
-      port: 2375
-      targetPort: 2375
+  - name: jenkins-http # Nom ajouté
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  - name: jenkins-jnlp # Nom ajouté
+    protocol: TCP
+    port: 50000
+    targetPort: 50000
+  - name: socat-port # Nom ajouté
+    protocol: TCP
+    port: 2375
+    targetPort: 2375
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -69,12 +71,12 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - http:
-        paths:
-          - path: /cicd/jenkins
-            pathType: Prefix
-            backend:
-              service:
-                name: jenkins-server-svc
-                port:
-                  number: 8080
+  - http:
+      paths:
+      - path: /cicd/jenkins
+        pathType: Prefix
+        backend:
+          service:
+            name: jenkins-server-svc
+            port:
+              number: 8080
