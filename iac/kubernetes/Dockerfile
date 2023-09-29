@@ -6,4 +6,3 @@ RUN apt update && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 USER 1001
-WORKDIR /kubernetes/

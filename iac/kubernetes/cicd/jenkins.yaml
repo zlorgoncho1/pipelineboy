@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: jenkins/jenkins
+        image: jenkins/jenkins:lts-jdk11
         volumeMounts:
         - name: jenkins-home
           mountPath: /var/jenkins_home
@@ -68,12 +68,13 @@ metadata:
   namespace: cicd
   name: cicd-ingress
   annotations:
+    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
       paths:
-      - path: /cicd/jenkins
+      - path: /
         pathType: Prefix
         backend:
           service:

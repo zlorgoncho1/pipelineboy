@@ -1,8 +1,9 @@
-version: '3'
+version: "3"
 
 services:
   kubectl:
     build: kubernetes
+    working_dir: /kubernetes/
     volumes:
       - ./config/kubernetes.config.yaml:/.kube/config
       - ./kubernetes/:/kubernetes/
@@ -12,9 +13,11 @@ services:
     working_dir: /terraform/
     volumes:
       - ./terraform/:/terraform/
-  
+
   load_balancer:
     build: nginx
     container_name: nginx
     ports:
       - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
