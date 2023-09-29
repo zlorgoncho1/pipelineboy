@@ -32,17 +32,17 @@ spec:
             - "tcp-listen:2375,fork,reuseaddr tcp-connect:target:2375"
           ports:
             - containerPort: 2375
-    volumes:
-      - name: jenkins_home
-        emptyDir:
-          sizeLimit: 5Gi
+      volumes:
+        - name: jenkins_home
+          emptyDir:
+            sizeLimit: 5Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    provider: jenkins_server_svc
-  name: jenkins_server_svc
+    provider: jenkins-server-svc
+  name: jenkins-server-svc
   namespace: cicd
 spec:
   type: ClusterIP
@@ -50,16 +50,13 @@ spec:
     matchLabels:
       app: jenkins_server
   ports:
-    - name: "JENKINS SERVER PORT"
-      protocol: TCP
+    - protocol: TCP
       port: 8080
       targetPort: 8080
-    - name: "JENKINS AGENT PORT"
-      protocol: TCP
+    -  protocol: TCP
       port: 50000
       targetPort: 50000
-    - name: "SOCAT PORT"
-      protocol: TCP
+    -  protocol: TCP
       port: 2375
       targetPort: 2375
 ---
@@ -78,6 +75,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: jenkins_server_svc
+                name: jenkins-server-svc
                 port:
                   number: 8080
