@@ -2,24 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: cicd
-  name: jenkins_server
+  name: jenkins-server
   labels:
-    app: jenkins_server
+    app: jenkins-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins_server
+      app: jenkins-server
   template:
     metadata:
       labels:
-        app: jenkins_server
+        app: jenkins-server
     spec:
       containers:
         - name: jenkins
           image: jenkins/jenkins
           volumeMounts:
-            - name: jenkins_home
+            - name: jenkins-home
               mountPath: /var/jenkins_home
           ports:
             - containerPort: 8080
@@ -33,7 +33,7 @@ spec:
           ports:
             - containerPort: 2375
       volumes:
-        - name: jenkins_home
+        - name: jenkins-home
           emptyDir:
             sizeLimit: 5Gi
 ---
@@ -48,7 +48,7 @@ spec:
   type: ClusterIP
   selector:
     matchLabels:
-      app: jenkins_server
+      app: jenkins-server
   ports:
     - protocol: TCP
       port: 8080
