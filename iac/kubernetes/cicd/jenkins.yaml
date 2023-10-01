@@ -24,6 +24,9 @@ spec:
         ports:
         - containerPort: 8080
         - containerPort: 50000
+        env:
+        - name: JENKINS_OPTS
+          value: "--prefix=/cicd/jenkins"
       - name: socat
         image: alpine/socat
         command:
@@ -49,15 +52,15 @@ spec:
   selector:
     app: 'jenkins-server'
   ports:
-  - name: jenkins-http # Nom ajouté
+  - name: jenkins-http
     protocol: TCP
     port: 8080
     targetPort: 8080
-  - name: jenkins-jnlp # Nom ajouté
+  - name: jenkins-jnlp
     protocol: TCP
     port: 50000
     targetPort: 50000
-  - name: socat-port # Nom ajouté
+  - name: socat-port
     protocol: TCP
     port: 2375
     targetPort: 2375
@@ -68,13 +71,18 @@ metadata:
   namespace: cicd
   name: cicd-ingress
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/server-snippets: |
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_pass_header Jenkins-Crumb;
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /
+      - path: /cicd/jenkins
         pathType: Prefix
         backend:
           service:
