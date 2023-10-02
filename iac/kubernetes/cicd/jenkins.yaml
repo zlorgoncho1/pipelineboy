@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: cicd
+  name: jenkins-server
+  labels:
+    app: jenkins-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins-server
+  template:
+    metadata:
+      labels:
+        app: jenkins-server
+    spec:
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts-jdk11
+        volumeMounts:
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        env:
+        - name: JENKINS_OPTS
+          value: "--prefix=/cicd/jenkins"
+      - name: socat
+        image: alpine/socat
+        command:
+        - "/bin/sh"
+        - "-c"
+        - "socat tcp-listen:2375,fork,reuseaddr tcp-connect:target:2375"
+        ports:
+        - containerPort: 2375
+      volumes:
+      - name: jenkins-home
+        emptyDir:
+          sizeLimit: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    provider: jenkins-server-svc
+  name: jenkins-server-svc
+  namespace: cicd
+spec:
+  type: ClusterIP
+  selector:
+    app: 'jenkins-server'
+  ports:
+  - name: jenkins-http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  - name: jenkins-jnlp
+    protocol: TCP
+    port: 50000
+    targetPort: 50000
+  - name: socat-port
+    protocol: TCP
+    port: 2375
+    targetPort: 2375
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: cicd
+  name: cicd-ingress
+  annotations:
+    nginx.org/server-snippets: |
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_pass_header Jenkins-Crumb;
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /cicd/jenkins
+        pathType: Prefix
+        backend:
+          service:
+            name: jenkins-server-svc
+            port:
+              number: 8080

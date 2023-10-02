@@ -1,0 +1,11 @@
+Note de Configuration 01: Configuration de Jenkins avec un Load Balancer Personnalisé
+    Si vous avez utilisé un load balancer personnalisé qui fonctionne avec un reverse proxy pour Jenkins, veuillez suivre les instructions ci-dessous pour éviter l'erreur 403 crumb :
+    - Créez un service NodePort pour exposer l'interface utilisateur de Jenkins.
+    - Identifiez un node qui héberge un pod Jenkins et récupérez son IP ou son domaine.
+    - Accédez à l'interface utilisateur de Jenkins en utilisant l'IP ou le domaine identifié, suivi du port du NodePort, (si vous avez défini un prefix, ne l'oubliez pas).
+    - Configurez Jenkins sans définir l'URL de Jenkins.
+    - Allez dans les paramètres de sécurité et activez la compatibilité proxy dans les paramètres de la protection crumb.
+    - Sauvegardez les modifications effectuées.
+    - Supprimez le service et accédez à l'interface utilisateur de Jenkins en utilisant le load balancer.
+    - Définissez l'URL de Jenkins sur l'IP ou le domaine du load balancer.
+    - Une fois ces étapes complétées, vérifiez si tout fonctionne correctement, parce que vraiment...
