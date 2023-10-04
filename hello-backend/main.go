@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	server := server.Server{Host: "localhost", Port: "8000"}
+	server := server.Server{Host: "0.0.0.0", Port: "8000"}
 	server.Start(app.AppModule)
 }
