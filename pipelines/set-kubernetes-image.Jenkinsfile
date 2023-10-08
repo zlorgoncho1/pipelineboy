@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        sudo yq -i '.spec.template.spec.containers[] | select(.name == "$CONTAINER_NAME").image = "${params.IMAGE_NAME}"' $YAML_PATH
+                        sudo yq -i '.spec.template.spec.containers[] | select(.name == "${env.CONTAINER_NAME}").image = "${params.IMAGE_NAME}"' ${env.YAML_PATH}
                     """
                 }
             }
@@ -54,8 +54,8 @@ pipeline {
             steps {
                 script {
                     sh """
-                        git add $YAML_PATH
-                        git commit -m "[JENKINS | KUBERNETES | IMAGE UPDATE] - $YAML_PATH -> $CONTAINER_NAME: [${params.IMAGE_NAME}]"
+                        git add ${env.YAML_PATH}
+                        git commit -m "[JENKINS | KUBERNETES | IMAGE UPDATE] - ${env.YAML_PATH} -> ${env.CONTAINER_NAME}: [${params.IMAGE_NAME}]"
                         git push
                     """
                 }
