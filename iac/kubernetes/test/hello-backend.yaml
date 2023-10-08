@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: hello-backend
-          image: zlorg/hello-backend:test-cd58a31fe940600e8582d1ac46a0218f97fac6f3
+          image: zlorg/hello-backend:test-dd08ffd8c04c70339d39cdf55ccc5b9e0f0b48fe
           ports:
             - containerPort: 8000
 ---
