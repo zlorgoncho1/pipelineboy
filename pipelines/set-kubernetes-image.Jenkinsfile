@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        yq -i '.spec.template.spec.containers[] | select(.name == "$CONTAINER_NAME").image = "${params.IMAGE_NAME}"' $YAML_PATH
+                        sudo yq -i '.spec.template.spec.containers[] | select(.name == "$CONTAINER_NAME").image = "${params.IMAGE_NAME}"' $YAML_PATH
                     """
                 }
             }
