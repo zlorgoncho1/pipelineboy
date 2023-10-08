@@ -51,7 +51,7 @@ pipeline {
                 expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
             }
             steps {
-                build(job: 'Set Kubernetes Image', parameters: [string(name: "IMAGE_NAME", value: "$IMAGE_NAME")])
+                build(job: 'Set Kubernetes Image', parameters: [string(name: "IMAGE_NAME", value: "${env.IMAGE_NAME}")])
             }
         }
     }
