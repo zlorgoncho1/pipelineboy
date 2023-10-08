@@ -16,15 +16,15 @@ pipeline {
         stage('Extraction des informations de l\'image') {
             steps {
                 script {
-                    def beforeTag = params.IMAGE_NAME.split(":")[0] 
+                    def beforeTag = params.IMAGE_NAME.split(":")[0]
                     def parts = beforeTag.split("/")
-                    CONTAINER_NAME = parts[1]
+                    env.CONTAINER_NAME = parts.size() > 1 ? parts[1] : ''
                     def tagPart = params.IMAGE_NAME.split(":")[1]
                     def namespace = tagPart.split("-")[0]
-                    YAML_PATH = "iac/kubernetes/${namespace}/${env.CONTAINER_NAME}.yaml"
-                    echo "CONTAINER_NAME: ${env.CONTAINER_NAME}"
-                    echo "YAML_PATH: ${env.YAML_PATH}"
+                    env.YAML_PATH = "iac/kubernetes/${namespace}/${env.CONTAINER_NAME}.yaml"
                 }
+                echo "CONTAINER_NAME: ${env.CONTAINER_NAME}"
+                echo "YAML_PATH: ${env.YAML_PATH}"
             }
         }
 
