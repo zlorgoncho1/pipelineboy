@@ -29,13 +29,15 @@ pipeline {
         }
 
         stage('Pull Git Repository') {
-            checkout([
+            steps {
+                checkout([
                     $class: 'GitSCM',
                     branches: [[name: "iac"]],
                     doGenerateSubmoduleConfigurations: false,
                     extensions: [],
                     userRemoteConfigs: [[url: 'https://github.com/zlorgoncho1/pipelineboy']]
                 ])
+            }
         }
 
         stage('Mise à jour du fichier YAML correspondant') {
