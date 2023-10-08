@@ -15,14 +15,17 @@ pipeline {
     }
 
     stages {
-        stage('Building Image') {
+        stage('Pull Active Micro Service Branch') {
             checkout([
                     $class: 'GitSCM',
-                    branches: [[name: params.BRANCH_NAME]],
+                    branches: [[name: "${params.BRANCH_NAME}"]],
                     doGenerateSubmoduleConfigurations: false,
                     extensions: [],
                     userRemoteConfigs: [[url: 'https://github.com/zlorgoncho1/pipelineboy']]
-            ])
+                ])
+        }
+
+        stage('Building Image') {
             steps {
                 script {
                     IMAGE_NAME = "${params.HUB_NAMESPACE}/${params.BRANCH_NAME}:${params.NAMESPACE}-${params.HASH}"
