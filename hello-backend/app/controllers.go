@@ -26,5 +26,5 @@ func (reflect AppController) Routes() []core.Route {
 }
 
 func (reflect AppController) Hello(request core.Request) core.Response {
-	return core.Response{Content: "Hello World"}
+	return core.Response{Content: "HELLO WORLD"}
 }
